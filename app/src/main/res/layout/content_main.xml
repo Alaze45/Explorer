@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.alaze.fileexplorer.MainActivity"
+    tools:showIn="@layout/app_bar_main">
+
+
+    <LinearLayout
+        android:id="@+id/LineLayMain"
+        style="@style/TextStyle1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/BackBut"
+            android:layout_alignParentRight="true"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="Back"/>
+        <Button
+            android:id="@+id/GoBut"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="100dp"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="Go"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:background="@color/colorPrimaryDark"
+            style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+            android:layout_marginTop="200dp"
+            android:max="1000"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:visibility="invisible"/>
+        <TextView
+            android:layout_marginTop="300dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:id="@+id/PBt"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:visibility="invisible"
+            android:textSize="30dp"/>
+        <Button
+            android:layout_marginTop="400dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:id="@+id/PBb"
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:text="Отмена"
+            android:layout_height="40dp" />
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
