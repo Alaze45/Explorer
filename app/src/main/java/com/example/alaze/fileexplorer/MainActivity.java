@@ -1,18 +1,14 @@
 package com.example.alaze.fileexplorer;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
@@ -35,8 +31,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.alaze.fileexplorer.browse.DBHelper;
+import com.example.alaze.fileexplorer.browse.DeleteFile;
+import com.example.alaze.fileexplorer.browse.copy;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    DBHelper dbHelper;
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -78,23 +79,34 @@ public class MainActivity extends AppCompatActivity
                 browseTo(Environment.getRootDirectory());
             }});
     }
+    @Override
+    public void onResume(){
+        super.onResume();
+        dbHelper = new DBHelper(this);
+    }
+    @Override
+    public void onPause(){
+        super.onPause();
+        dbHelper.close();
+    }
 
 // context menu
     public static final int IDM_COPY = 101;
     public static final int IDM_PASTE = 102;
     public static final int IDM_DALETE = 103;
     public static final int IDM_PROPERTIES = 104;
+    public static final int IDM_TAB = 105;
     public  static File Temp_File;
     private static String current_file = "/";
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenu.ContextMenuInfo menuInfo)
-    {
+                                    ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(Menu.NONE, IDM_COPY, Menu.NONE, "Копировать");
         menu.add(Menu.NONE, IDM_PASTE, Menu.NONE, "Вставить");
         menu.add(Menu.NONE, IDM_DALETE, Menu.NONE, "Удалить");
         menu.add(Menu.NONE, IDM_PROPERTIES, Menu.NONE, "Свойства");
+        menu.add(Menu.NONE, IDM_TAB, Menu.NONE, "В закладки");
     }
     @Override
     public boolean onContextItemSelected(MenuItem item)
@@ -126,17 +138,22 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 try {
+                    ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+                    progressBar.setVisibility(View.VISIBLE);
                     copyFiles(Temp_File, f);
+                    progressBar.setVisibility(View.INVISIBLE);
                 } catch (IOException e) {
                     e.printStackTrace();
                     Log.i("file", "not create file");
+                    message = "File not create";
                 }
             }
                 break;
             case IDM_DALETE:
             {
-                if (new File(current_file).delete())
-                message = "удален";
+                DeleteFile deleteFile = new DeleteFile();
+                if (deleteFile.Delete(new File(current_file)))
+                    message = "удален";
             }
             break;
             case IDM_PROPERTIES:
@@ -144,6 +161,16 @@ public class MainActivity extends AppCompatActivity
                 Intent i = new Intent(MainActivity.this, propertiesFile.class);
                 i.putExtra("fileName",current_file);
                 startActivity(i);
+            }
+            break;
+            case IDM_TAB:
+            {
+                SQLiteDatabase database = dbHelper.getWritableDatabase();
+                ContentValues contentValues = new ContentValues();
+                File TabFile = new File(current_file);
+                contentValues.put(DBHelper.KEY_NAME, TabFile.getName());
+                contentValues.put(DBHelper.KEY_TAB, TabFile.getAbsolutePath());
+                database.insert(DBHelper.TABLE_CONTACTS, null, contentValues);
             }
             break;
             default:
@@ -189,9 +216,12 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_manage) {
             Intent i = new Intent(MainActivity.this, Setting.class);
             startActivity(i);
-
-        } else if(id == R.id.nav_share){
-        }else if(id == R.id.nav_send){}
+        }   else if(id == R.id.nav_share){
+        }   else if(id == R.id.nav_send){
+        }   else if(id == R.id.nav_tab){
+            Intent i = new Intent(MainActivity.this, Tabs.class);
+            startActivity(i);
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -212,26 +242,18 @@ public class MainActivity extends AppCompatActivity
             Log.i("browseTo", aDirectory.getAbsoluteFile().toString());
 
         } else {
-            //if we want to open file, show this dialog:
-            //listener when YES button clicked
             DialogInterface.OnClickListener okButtonListener = new DialogInterface.OnClickListener(){
                 public void onClick(DialogInterface arg0, int arg1) {
-                    //intent to navigate file
                     Intent i = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("file://" + aDirectory.getAbsolutePath()));
-                    //start this activity
                     startActivity(i);
                 }
             };
-            //listener when NO button clicked
             DialogInterface.OnClickListener cancelButtonListener = new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface arg0, int arg1) {
-                    //do nothing
-                    //or add something you want
                 }
             };
-            //create dialog
             new AlertDialog.Builder(this)
-                    .setTitle("Подтверждение") //title
+                    .setTitle("Подтверждение")
                     .setMessage("Хотите открыть файл "+ aDirectory.getName() + "?")
                     .setPositiveButton("Да", okButtonListener)
                     .setNegativeButton("Нет", cancelButtonListener)
@@ -241,7 +263,6 @@ public class MainActivity extends AppCompatActivity
     private void fill(File[] files) {
 
         LinearLayout l = (LinearLayout) findViewById(R.id.LineLayMain);
-        //Temp_file_name_list.clear();
 
         if (null != l && l.getChildCount() > 0) {
             try {
@@ -275,7 +296,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
     public void copyFiles(File source, File target) throws IOException {
         if(source.isDirectory())
         {
@@ -291,70 +311,9 @@ public class MainActivity extends AppCompatActivity
         else {
             if(!target.createNewFile())
                 Log.i("file","not create file" + source.getName());
+            ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
             copy c = new copy(source, target);
-            Button button = (Button) findViewById(R.id.PBb);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                }
-            });
             c.execute();
-        }
-    }
-    class copy extends AsyncTask<Void, Integer, Void> {
-        private File source;
-        private File target;
-        private float p = 0;
-        public copy(File f1, File f2) {
-            this.source = f1;
-            this.target = f2;
-        }
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //progressBar.setVisibility(View.VISIBLE);
-            //textView.setVisibility(View.VISIBLE);
-            //button.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            //progressBar.setProgress(values[0]);
-            //textView.setText(source.getName());
-        }
-
-        @Override
-        protected Void doInBackground(Void... parameter) {
-            try {
-                InputStream in = new FileInputStream(source);
-                OutputStream out = new FileOutputStream(target);
-                byte[] buf = new byte[1024];
-                int len;
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                    float a = len;
-                    float b = source.length();
-                    p += a / b * 1000f;
-                    publishProgress((int) p);
-                }
-                in.close();
-                out.close();
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            //progressBar.setVisibility(View.INVISIBLE);
-            //textView.setVisibility(View.INVISIBLE);
-            //button.setVisibility(View.INVISIBLE);
         }
     }
 }

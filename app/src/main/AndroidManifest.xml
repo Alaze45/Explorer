@@ -32,7 +32,8 @@
         </activity>
         <activity android:name=".SettingActivity" />
         <activity android:name=".Setting" />
-        <activity android:name=".propertiesFile"></activity>
+        <activity android:name=".propertiesFile" />
+        <activity android:name=".Tabs"></activity>
     </application>
 
 </manifest>
