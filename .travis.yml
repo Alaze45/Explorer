@@ -28,10 +28,13 @@ matrix:
             - libcunit1-dev
             - libcurl3
             - libcurl3-nss-dev
-      env: CMAKE_BUILD_TYPE=RELEASE BUILD_TESTS=ON
+      env: CMAKE_BUILD_TYPE=RELEASE BUILD_TESTS=ON TEST=true
 
 script:
   - cmake --version
   - make --version
   - ls
   - echo $CMAKE_BUILD_TYPE $BUILD_TESTS
+  - if [ $TEST == "true" ]; then
+    echo "------------cool-------------";
+    fi
