@@ -16,13 +16,10 @@ matrix:
       addons:
         apt:
           packages:
-            - kalakris-cmake
-            - gcc-4.9
-            - g++-4.9
-          sources:
-            - ubuntu-toolchain-r-test
             - cmake
             - ninja-build
+          sources:
+            - ubuntu-toolchain-r-test
       env: CMAKE_BUILD_TYPE=DEBUG
 
     - os: linux
@@ -32,13 +29,10 @@ matrix:
       addons:
         apt:
           packages:
-            - kalakris-cmake
-            - gcc-4.9
-            - g++-4.9
-          sources:
-            - ubuntu-toolchain-r-test
             - cmake
             - ninja-build
+          sources:
+            - ubuntu-toolchain-r-test
       env: CMAKE_BUILD_TYPE=RELEASE
 
 
