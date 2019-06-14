@@ -1,9 +1,9 @@
 language: c
-jdk: openjdk8
 
 matrix:
   include:
     - os: linux
+      jdk: openjdk8
       dist: trusty
       sudo: true
       compiler: gcc
@@ -17,6 +17,11 @@ matrix:
             - libcurl3
             - libcurl3-nss-dev
       env: CMAKE_BUILD_TYPE=DEBUG BUILD_TESTS=ON
+
+before_script:
+  - sudo sh -c 'curl https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_unstable.list > /etc/apt/sources.list.d/dart_unstable.list'
+  - sudo apt-get update
+  - sudo apt-get install dart
 
 script:
   - cmake --version
