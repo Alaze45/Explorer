@@ -30,5 +30,5 @@ script:
   - make --version
   - java --version
   - dart --version
-  - ls
+  - ls /usr/lib/jvn
   - echo $CMAKE_BUILD_TYPE $BUILD_TESTS
