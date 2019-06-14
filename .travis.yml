@@ -1,4 +1,4 @@
-language: c
+language: java
 
 matrix:
   include:
@@ -11,7 +11,6 @@ matrix:
         apt:
           packages:
             - cmake
-            - openjdk-8-jdk
             - libcunit1
             - libcunit1-dev
             - libcurl3
@@ -24,11 +23,8 @@ before_script:
   - sudo apt-get install dart
 
 script:
-  - jdk_switcher use openjdk8
-  - export JAVA_HOME=$HOME/openjdk8
   - cmake --version
   - make --version
   - java --version
   - dart --version
-  - ls /usr/lib/jvn
   - echo $CMAKE_BUILD_TYPE $BUILD_TESTS
