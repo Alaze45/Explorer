@@ -11,7 +11,7 @@ matrix:
         apt:
           packages:
             - cmake
-            - openjdk8
+            - openjdk-8-jdk
             - libcunit1
             - libcunit1-dev
             - libcurl3
