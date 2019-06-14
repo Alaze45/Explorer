@@ -17,6 +17,16 @@ matrix:
             - libcurl3-nss-dev
       env: CMAKE_BUILD_TYPE=DEBUG BUILD_TESTS=ON
 
+before_script:
+  - apt-add-repository ppa:dartsim/ppa -y
+  - apt-get update
+  - apt-get install libdart6-dev -y
+  - git clone git://github.com/dartsim/dart.git
+  - mkdir -p dart/build
+  - cd dart/build
+  - cmake ..
+  - make install
+
 script:
   - cmake --version
   - make --version
