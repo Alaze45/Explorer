@@ -1,6 +1,7 @@
 matrix:
   include:
     - os: linux
+      language: c
       jdk: openjdk8
       dist: trusty
       sudo: true
@@ -19,6 +20,7 @@ matrix:
         - sudo apt-get update
         - sudo apt-get install dart
       script:
+        - ls $HOME
         - cmake --version
         - make --version
         - java --version
