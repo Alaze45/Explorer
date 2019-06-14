@@ -11,6 +11,7 @@ matrix:
         apt:
           packages:
             - cmake
+            - openjdk-8-jdk
             - libcunit1
             - libcunit1-dev
             - libcurl3
@@ -18,8 +19,8 @@ matrix:
       env: CMAKE_BUILD_TYPE=DEBUG BUILD_TESTS=ON
 
 before_script:
-  - jdk_switcher use openjdk8
-  - export JAVA_HOME=$HOME/openjdk8
+  - export JAVA_HOME=/usr/lib/jvn/java-8-openjdk-amd64
+  - export PATH=$JAVA_HOME/bin:$PATH
   - sudo sh -c 'curl https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_unstable.list > /etc/apt/sources.list.d/dart_unstable.list'
   - sudo apt-get update
   - sudo apt-get install dart
