@@ -21,7 +21,7 @@ matrix:
 before_script:
   - jdk_switcher use openjdk8
   - export JAVA_HOME=$HOME/openjdk8
-  - $TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk11 --target $JAVA_HOME
+  - $TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk8 --target $JAVA_HOME
   - sudo sh -c 'curl https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_unstable.list > /etc/apt/sources.list.d/dart_unstable.list'
   - sudo apt-get update
   - sudo apt-get install dart
